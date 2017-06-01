@@ -91,7 +91,20 @@ public class ALU {
 		}
 		return retString.substring(2);
 	}
-	
+	private String getInf(double value, int eLength, int sLength){
+		String stringELength=turn("1",eLength);
+		String stringSLength=turn("0",sLength);
+
+		if(value>0){
+
+		return plus0+stringELength+stringSLength;
+		
+		}else{
+			
+		return minus1+stringELength+stringSLength;
+		}
+		
+	}
 	/**
 	 * 
 	 * 2.生成十进制浮点数的二进制表示。
@@ -115,16 +128,12 @@ public class ALU {
 		String floatRepresentation="";
 		switch(number){
 		case "+Inf"	:
-			stringELength=turn("1",eLength);
-			stringSLength=turn("0",sLength);
-	
-			floatRepresentation=plus0+stringELength+stringSLength;
+			
+			floatRepresentation=getInf(1,  eLength,  sLength);
 			break;
 		case "-Inf"	:
-			stringELength=turn("1",eLength);
-			stringSLength=turn("0",sLength);
-			
-			floatRepresentation=minus1+stringELength+stringSLength;
+
+			floatRepresentation=getInf(-1,  eLength,  sLength);
 			break;
 		case "NaN"	:
 			stringELength=turn("1",eLength);
@@ -168,7 +177,13 @@ public class ALU {
 			System.out.println("no to");
 			}else{
 			//规格化
-			
+				if(Double.parseDouble(number)<=-(2*Math.pow(2, Math.pow(2, eLength)-2))){
+					return getInf(-1, eLength, sLength);
+				}
+				if(Double.parseDouble(number)>=(2*Math.pow(2, Math.pow(2, eLength)-2))){
+					return getInf(1, eLength, sLength);
+				}
+				System.out.println("规格化");
 				double[] numbers = null;
 				try {
 					numbers = splitNumber2doubleIntegerAndDecimal(number);
@@ -187,51 +202,69 @@ public class ALU {
 				int jiema=0;
 				String stringOf1="";
 				String stringOf2="";
-				double numof1=numbers[0];
-				double numof2=numbers[1];
-
-				
-				{
-					int idtfy=0;
-					double i = power(2,eLength)/2;
-					
-					while(numof1>0||i>=0){
-						if(numof1>=Math.pow(2, i)){
-							idtfy=1;
-							numof1=numof1-Math.pow(2, i);
-					
-							 stringOf1= stringOf1+"1";
-						}else{
-							if( idtfy==1)
-								stringOf1= stringOf1+"0";
-						}
-						i--;
+				double numof1=Math.abs(numbers[0]);
+				double numof2=Math.abs(numbers[1]);
+				System.out.println();
+				System.out.println(numof1);
+				System.out.println(numof2);
+				System.out.println();
+//				System.out.println(numof1+" num2 "+numof2);
+				int i=0;
+				for( i =0;i<1000;i++){
+					if(Math.pow(2, i)>numof1){
+						break;
 					}
 				}
+
+				boolean ident = false;
+				while(i>=0||numof1!=0){
+					if(numof1>=Math.pow(2, i)){
+						ident=true;
+						numof1=numof1-Math.pow(2, i);
+						stringOf1=stringOf1+"1";
+					}else{
+						if(ident){
+							stringOf1=stringOf1+"0";
+						}
+					}
+					i--;
+				}
+				
+				
+				
+				
+
+//				System.out.println(stringOf1);
+				
+	
+				int j=2*sLength;
+
+				while(numof2!=0&&j>0){
+					System.out.println("243!numof2  "+numof2);
+					j--;
+					if(numof2*2>=1){
+						numof2=numof2*2-1.0D;
+						stringOf2=stringOf2+"1";
+					}else{
+						numof2=numof2*2;
+						stringOf2=stringOf2+"0";
+					}
+				}
+				
+
+				System.out.println("阶码"+jiema+","+"偏移"+pianyi+","+ stringOf1+","+stringOf2+","+eLength+","+sLength);
+				
 				if(stringOf1.length()<1){
 					stringOf1="0";
 				}
-				System.out.println(stringOf1);
-				
-				{	
-					
-						for(int i = 1;i<sLength+10;i++){
-							if(numof2>=Math.pow(0.5, i)){
-								stringOf2=stringOf2+"1";
-								numof2=numof2-Math.pow(0.5, i);
-							}else{
-								stringOf2=stringOf2+"0";
-							}
-						}
-						
-						
+				if(stringOf2.length()<1){
+					stringOf2="0";
 				}
 
-				
-				System.out.println(jiema+","+pianyi+","+ stringOf1+","+stringOf2+","+eLength+","+sLength);
-				
-				
-				
+				System.out.println("stringOf1: "+stringOf1);
+
+				System.out.println("stringOf2: "+stringOf2);
+				stringOf2=stringOf2+turn("0", sLength);
 				floatRepresentation=floatRepresentation+getFinalFloatString(jiema, pianyi, stringOf1, stringOf2, eLength, sLength);
 				
 				
@@ -265,10 +298,28 @@ public class ALU {
 	
 	
 	private String getFinalFloatString(int jiema, double pianyi,String stringOf1, String stringOf2,  int eLength, int sLength){
+		if(stringOf1.equals("0")){
+			if(!stringOf2.equals(fullBit("0", stringOf2.length()))){
+				int i=0;
+				out:for( i=0;i<stringOf2.length();i++){
+					if(stringOf2.charAt(i)=='1'){
+
+						 jiema-=i+1;
+						 stringOf2=stringOf2.substring(i+1);
+						 
+						 stringOf2=stringOf2+fullBit("0", i+1);
+						 
+						 System.out.println("haha");
+						 break out;
+					}
+				}
+			}
+		}
+		
 		String floatRepresentation="";
 		 jiema=jiema+ ((stringOf1.length()-1)+(int)(pianyi));
-			
-			
+		
+		 System.out.println("jiema:"+jiema);
 			String jiemastring="";
 			for(int i = eLength-1;i>=0;i--){
 				if(jiema>=Math.pow(2, i)){
@@ -278,6 +329,8 @@ public class ALU {
 					jiemastring=jiemastring+"0";
 				}
 			}
+			System.out.println(integerTrueValue(0+jiemastring));
+			System.out.println(jiemastring);
 			
 			floatRepresentation=floatRepresentation+(jiemastring+stringOf1.substring(1)+stringOf2).substring(0, eLength+sLength);
 			
@@ -347,6 +400,10 @@ public class ALU {
 	 */
 	public String floatTrueValue (String operand, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
+		
+		if(operand.substring(1).equals(turn("0", operand.substring(1).length()))){
+			return ""+0.0;
+		}
 		String ret = "";
 		int sum=0;
 		if(operand.charAt(0)=='1'){
@@ -366,37 +423,75 @@ public class ALU {
 		else if(eString.equals(turn("0", eLength))){
 			// 非规格化
 			
+			int yiwei=-(power(2, eLength-1)-1);
 			
-			
-			return "非规格化";
+			return ret+floatTrue(sString, yiwei);
 			
 			
 			
 		}else {
 			//规格化
+//			System.out.println(integerTrueValue("0"+eString));
+//			
 			int yiwei=Integer.parseInt(integerTrueValue("0"+eString))-(power(2, eLength-1)-1);
 			//get previous value of sLength
 		
 			while(("1"+sString).length()<yiwei+3){
 				sString=sString+"0";
 			}
-			String integerString = ("1"+sString).substring(0, yiwei+1);
-			String decimalString = ("1"+sString).substring(yiwei+1);
-			System.out.println(integerString);
-			System.out.println(decimalString);
-			long integerLong= Long.parseLong(integerTrueValue("0"+integerString));
-			double decimalDouble =0;
-			for(int i =0;i<decimalString.length();i++){
-				if(decimalString.charAt(i)=='1')
-					decimalDouble+=Math.pow(2, -(i+1));
-			}
-			
-			return ret+integerLong+String.valueOf(decimalDouble).substring(1);
+			return ret+floatTrue(sString, yiwei);
+//			
+//			String integerString;
+//			String decimalString;
+//			if(yiwei>=0){
+//
+//			integerString = ("1"+sString).substring(0, yiwei+1);
+//			decimalString = ("1"+sString).substring(yiwei+1);
+//
+//			}else{
+//				integerString ="0";
+//				decimalString=fullBit("0", (-yiwei)-1)+("1"+sString);
+//			}
+//			double integerDouble= 0;
+//			for(int i=integerString.length()-1;i>=0;i--){
+//				if(integerString.charAt(i)=='1'){
+//					integerDouble+=Math.pow(2, (integerString.length()-1)-i);
+//				}else{
+//					
+//				}
+//			}
+//
+//			double decimalDouble =0;
+//			for(int i =0;i<decimalString.length();i++){
+//				if(decimalString.charAt(i)=='1')
+//					decimalDouble+=Math.pow(2, -(i+1));
+//			}
+//			double retd = integerDouble+decimalDouble;
+//			return ret+retd;
+////			System.out.println(ret+integerLong+String.valueOf(decimalDouble).substring(1));
+////			return ret+integerLong+String.valueOf(decimalDouble).substring(1);
 		}
 		
 		
 		
 	}
+	private double floatTrue(String sString,int yiwei){
+		double pianyiliang = Math.pow(2, yiwei);
+		double decimalDouble =0;
+		for(int i =0;i<sString.length();i++){
+			if(sString.charAt(i)=='1')
+				decimalDouble+=Math.pow(2, -(i+1));
+		}
+		decimalDouble+=1.0;
+		
+		return decimalDouble*pianyiliang;
+		
+		
+	}
+	
+	
+	
+	
 	
 	/**
 	 * 7.按位取反操作。<br/>
@@ -748,9 +843,7 @@ public class ALU {
 			reg=ariRightShift(reg, 1);
 
 		}
-//			reg=add.substring(1)+reg.substring(addString.length());
-//			System.out.println(reg);
-		System.out.println(reg);
+
 			if(reg.substring(0, (reg.length()-1)/2+4).equals(fullBit(""+reg.charAt(length+4), reg.substring(0, (reg.length()-1)/2+4).length()))){
 				return "0"+reg.substring(length+4,length*2);
 			}
@@ -785,7 +878,7 @@ public class ALU {
 		operand1=fullBit(operand1, length);
 		operand2=fullBit(operand2, length);
 		String reg=fullBit(operand1, length*2);
-		System.out.println(reg);
+
 		String R=reg.substring(0, length);
 		
 		String Q=reg.substring(length);
@@ -793,14 +886,13 @@ public class ALU {
 		if(operand2.equals(fullBit("0", operand2.length()))){
 			syb="1";
 		}
-		
+		if(operand1.equals(fullBit("0", operand2.length()))){
+			return fullBit("0", 2*length+1);
+		}
 		R=adder(reg.substring(0,length), SwitchDiv(reg.substring(length), operand2), '0', operand2.length()).substring(1);
 		//panduan yi chu
 		
-		System.out.println(reg.substring(0,length));
-		System.out.println(SwitchDiv(reg.substring(length), operand2));
-		System.out.println(R);
-		
+
 		
 		
 		
@@ -823,8 +915,7 @@ public class ALU {
 		}
 		Q=Q.substring(1)+Qone;
 		
-		System.out.println(R);
-		System.out.println(Q);
+
 		if(operand1.charAt(0)!=operand2.charAt(0)){
 			Q=oneAdder(Q).substring(1);
 		}
@@ -842,11 +933,11 @@ public class ALU {
 	}
 	private String SwitchDivQ(String R,String operand){
 		if(R.charAt(0)==operand.charAt(0)){
-			System.out.println(1);
+
 			return "1";
 			
 		}else{
-			System.out.println(0);
+
 			return "0";
 		}
 	}
