@@ -174,7 +174,37 @@ public class ALU {
 //			System.out.println(Math.pow(2, (Math.pow(2, 0)-pianyi)));
 			if(num!=0&&num<Math.pow(2, (Math.pow(2, 0)-pianyi))){
 			//非规格化
-			System.out.println("no to");
+				double[] numbers = null;
+				try {
+					numbers = splitNumber2doubleIntegerAndDecimal(number);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return "error";
+				}
+			
+				
+				double numof2=Math.abs(numbers[1]);
+				int j=2*sLength+2;
+				String stringOf2="";
+				while(numof2!=0&&j>0){
+				
+					
+					j--;
+					if(numof2*2>=1){
+						numof2=numof2*2-1.0D;
+						stringOf2=stringOf2+"1";
+					}else{
+						numof2=numof2*2;
+						stringOf2=stringOf2+"0";
+					}
+					
+				}
+				
+				stringOf2=leftShift(stringOf2,Math.abs((1-(int)pianyi)) );
+				
+				return floatRepresentation+turn("0", eLength)+stringOf2.substring(0, sLength);
+
 			}else{
 			//规格化
 				if(Double.parseDouble(number)<=-(2*Math.pow(2, Math.pow(2, eLength)-2))){
@@ -183,7 +213,7 @@ public class ALU {
 				if(Double.parseDouble(number)>=(2*Math.pow(2, Math.pow(2, eLength)-2))){
 					return getInf(1, eLength, sLength);
 				}
-				System.out.println("规格化");
+				
 				double[] numbers = null;
 				try {
 					numbers = splitNumber2doubleIntegerAndDecimal(number);
@@ -204,10 +234,10 @@ public class ALU {
 				String stringOf2="";
 				double numof1=Math.abs(numbers[0]);
 				double numof2=Math.abs(numbers[1]);
-				System.out.println();
-				System.out.println(numof1);
-				System.out.println(numof2);
-				System.out.println();
+//				System.out.println();
+//				System.out.println(numof1);
+//				System.out.println(numof2);
+//				System.out.println();
 //				System.out.println(numof1+" num2 "+numof2);
 				int i=0;
 				for( i =0;i<1000;i++){
@@ -240,7 +270,7 @@ public class ALU {
 				int j=2*sLength;
 
 				while(numof2!=0&&j>0){
-					System.out.println("243!numof2  "+numof2);
+					
 					j--;
 					if(numof2*2>=1){
 						numof2=numof2*2-1.0D;
@@ -252,8 +282,6 @@ public class ALU {
 				}
 				
 
-				System.out.println("阶码"+jiema+","+"偏移"+pianyi+","+ stringOf1+","+stringOf2+","+eLength+","+sLength);
-				
 				if(stringOf1.length()<1){
 					stringOf1="0";
 				}
@@ -261,9 +289,6 @@ public class ALU {
 					stringOf2="0";
 				}
 
-				System.out.println("stringOf1: "+stringOf1);
-
-				System.out.println("stringOf2: "+stringOf2);
 				stringOf2=stringOf2+turn("0", sLength);
 				floatRepresentation=floatRepresentation+getFinalFloatString(jiema, pianyi, stringOf1, stringOf2, eLength, sLength);
 				
@@ -309,7 +334,7 @@ public class ALU {
 						 
 						 stringOf2=stringOf2+fullBit("0", i+1);
 						 
-						 System.out.println("haha");
+					
 						 break out;
 					}
 				}
@@ -319,7 +344,6 @@ public class ALU {
 		String floatRepresentation="";
 		 jiema=jiema+ ((stringOf1.length()-1)+(int)(pianyi));
 		
-		 System.out.println("jiema:"+jiema);
 			String jiemastring="";
 			for(int i = eLength-1;i>=0;i--){
 				if(jiema>=Math.pow(2, i)){
@@ -329,9 +353,7 @@ public class ALU {
 					jiemastring=jiemastring+"0";
 				}
 			}
-			System.out.println(integerTrueValue(0+jiemastring));
-			System.out.println(jiemastring);
-			
+	
 			floatRepresentation=floatRepresentation+(jiemastring+stringOf1.substring(1)+stringOf2).substring(0, eLength+sLength);
 			
 			return floatRepresentation;
@@ -402,7 +424,7 @@ public class ALU {
 		// TODO YOUR CODE HERE.
 		
 		if(operand.substring(1).equals(turn("0", operand.substring(1).length()))){
-			return ""+0.0;
+			return ""+0;
 		}
 		String ret = "";
 		int sum=0;
@@ -425,7 +447,7 @@ public class ALU {
 			
 			int yiwei=-(power(2, eLength-1)-1);
 			
-			return ret+floatTrue(sString, yiwei);
+			return ret+denormalizedFloatTrue(sString, yiwei);
 			
 			
 			
@@ -488,7 +510,20 @@ public class ALU {
 		
 		
 	}
+	private double denormalizedFloatTrue(String sString,int yiwei){
 	
+		double pianyiliang = Math.pow(2, yiwei);
+		double decimalDouble =0;
+		for(int i =0;i<sString.length();i++){
+			if(sString.charAt(i)=='1')
+				decimalDouble+=Math.pow(2, -(i+1));
+		}
+//		decimalDouble+=1.0;
+		
+		return decimalDouble*pianyiliang*2;
+		
+		
+	}
 	
 	
 	
@@ -523,7 +558,8 @@ public class ALU {
 	public String leftShift (String operand, int n) {
 		// TODO YOUR CODE HERE.
 		int StringBit=operand.length();
-		n = n%(StringBit);
+//		n = n%(StringBit);
+		if(n>StringBit){n=StringBit;}
 		operand = operand.substring(n);
 		operand+=ALU.turn("0", n);
 		return operand;
@@ -539,7 +575,9 @@ public class ALU {
 	public String logRightShift (String operand, int n) {
 		// TODO YOUR CODE HERE.
 		int StringBit=operand.length();
-		n = n%(StringBit);
+		if(n>StringBit){
+			n=StringBit;
+		}
 //		String symbol=""+operand.charAt(0);
 		operand = operand.substring(0,(StringBit-n));
 		operand=ALU.turn("0", n)+operand;
@@ -556,7 +594,7 @@ public class ALU {
 	public String ariRightShift (String operand, int n) {
 		// TODO YOUR CODE HERE.
 		int StringBit=operand.length();
-		n = n%(StringBit);
+		if(n>StringBit){n=StringBit;}
 		String symbol=""+operand.charAt(0);
 		operand = operand.substring(0,(StringBit-n));
 		operand=ALU.turn(symbol, n)+operand;
@@ -750,6 +788,11 @@ public class ALU {
 		
 				return OF+ret;
 	}
+	/*
+	 * 将操作数operand符号扩展到length位长度
+	 */
+	
+	
 	private String fullBit(String operand,int length){
 		char c=operand.charAt(0);
 		while(operand.length()<length){
@@ -884,10 +927,12 @@ public class ALU {
 		String Q=reg.substring(length);
 		
 		if(operand2.equals(fullBit("0", operand2.length()))){
+			System.out.println("zhe li 1");
 			syb="1";
 		}
 		if(operand1.equals(fullBit("0", operand2.length()))){
-			return fullBit("0", 2*length+1);
+			return "NaN";
+			
 		}
 		R=adder(reg.substring(0,length), SwitchDiv(reg.substring(length), operand2), '0', operand2.length()).substring(1);
 		//panduan yi chu
@@ -895,13 +940,14 @@ public class ALU {
 
 		
 		
-		
+		System.out.println(R);
 		
 		
 		reg=R+Q;
-		
+		System.out.println(reg); 
 		String Qone=SwitchDivQ(R, operand2);
 		if((operand1.charAt(0)==operand2.charAt(0)&&Qone.equals("1"))||(operand1.charAt(0)!=operand2.charAt(0)&&Qone.equals("0"))){
+			System.out.println("zhe li 2    "+Qone);
 			syb="1";
 		}
 		
@@ -962,9 +1008,83 @@ public class ALU {
 	 */
 	public String signedAddition (String operand1, String operand2, int length) {
 		// TODO YOUR CODE HERE.
+		//首先将operand符号提取出来
+		char signOfOperand1 = operand1.charAt(0);
+		char signOfOperand2 = operand2.charAt(0);
 		
-		return null;
+		//将操作数取绝对值后填充到length长度
+		operand1 = fullBit("0"+operand1.substring(1), length);
+		operand2 = fullBit("0"+operand2.substring(1), length);
+		//判断之后做加法还是减法
+		System.out.println(operand1+" "+operand2);
+		String retStirng="";
+		if(signOfOperand1==signOfOperand2){
+			String adderValue=adder(operand1, operand2, '0', length+4).substring(1);
+
+		
+				retStirng=""+adderValue.charAt(3)+signOfOperand1+adderValue.substring(4);
+				
+		
+		}else{
+			String ret = adder("0"+operand1,"0"+negation(operand2) , '1', length+4);
+			System.out.println(operand1+ " "+negation(operand2));
+			ret=ret.substring(4);
+			System.out.println("ret="+ret );
+			if(ret.charAt(0)=='1'){
+				retStirng= "0"+ signOfOperand1+ret.substring(1);
+			}else{
+				retStirng="0"+negation(""+signOfOperand1)+oneAdder(negation(ret.substring(1))).substring(1);
+			}
+			
+//			String retSign="";
+//			if(firstOperandIsBigger(operand1, operand2)){
+//				
+//				
+//				
+//				String ret = adder(operand1,negation(operand2) , '1', length);
+//				retStirng=ret.charAt(0)+signOfOperand1
+//			}else{
+//				String ret = adder(operand2,negation(operand1) , '1', length);
+//				
+//			}
+			
+		}
+		//do it
+		
+		
+		
+		
+		
+		return retStirng;
 	}
+	/*
+	 * 比较原码大小,第一个大就返回true,否则返回false,
+	 */
+	private boolean firstOperandIsBigger(String firstOperand,String secondOperand){
+		if(firstOperand.length()!=secondOperand.length()){
+			int length=(firstOperand.length()>secondOperand.length())?firstOperand.length():secondOperand.length();
+			firstOperand=fullBit("0"+firstOperand, length);
+			secondOperand=fullBit("0"+secondOperand, length);
+		}
+		for(int i=0;i<firstOperand.length();i++){
+			
+			if(firstOperand.charAt(i)!=secondOperand.charAt(i)){
+				if(firstOperand.charAt(i)=='1'&&secondOperand.charAt(i)=='0'){
+					return true;
+				}else if(firstOperand.charAt(i)=='0'&&secondOperand.charAt(i)=='1'){
+					return false;
+				}else{
+					return false;
+				}
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	
+	
 	
 	/**
 	 * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
@@ -978,6 +1098,9 @@ public class ALU {
 	 */
 	public String floatAddition (String operand1, String operand2, int eLength, int sLength, int gLength) {
 		// TODO YOUR CODE HERE.
+		
+		
+		
 		return null;
 	}
 	
