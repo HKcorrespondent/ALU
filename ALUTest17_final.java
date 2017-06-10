@@ -19,7 +19,8 @@ public class ALUTest17_final {
 	}
 	@Test
 	public void floatAddition() {
-		assertEquals("000111111101110000",alu.floatAddition("00111111010100000", "00111111001000000", 8, 8, 4));
+		System.out.println("001111010"+"   "+ "001110100");
+		assertEquals("0010000111",alu.floatAddition("001111010", "001110100", 4, 4, 4));
 	}
 	@Test
 	public void floatSubtraction() {

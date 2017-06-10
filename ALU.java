@@ -1,3 +1,5 @@
+import static org.junit.Assert.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -1016,7 +1018,7 @@ public class ALU {
 		operand1 = fullBit("0"+operand1.substring(1), length);
 		operand2 = fullBit("0"+operand2.substring(1), length);
 		//判断之后做加法还是减法
-		System.out.println(operand1+" "+operand2);
+
 		String retStirng="";
 		if(signOfOperand1==signOfOperand2){
 			String adderValue=adder(operand1, operand2, '0', length+4).substring(1);
@@ -1027,9 +1029,9 @@ public class ALU {
 		
 		}else{
 			String ret = adder("0"+operand1,"0"+negation(operand2) , '1', length+4);
-			System.out.println(operand1+ " "+negation(operand2));
+			
 			ret=ret.substring(4);
-			System.out.println("ret="+ret );
+	
 			if(ret.charAt(0)=='1'){
 				retStirng= "0"+ signOfOperand1+ret.substring(1);
 			}else{
@@ -1085,7 +1087,7 @@ public class ALU {
 	
 	
 	
-	
+
 	/**
 	 * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
 	 * 例：floatAddition("00111111010100000", "00111111001000000", 8, 8, 8)
@@ -1098,10 +1100,120 @@ public class ALU {
 	 */
 	public String floatAddition (String operand1, String operand2, int eLength, int sLength, int gLength) {
 		// TODO YOUR CODE HERE.
+		//assertEquals("000111111101110000",alu.floatAddition("00111111010100000", "00111111001000000", 8, 8, 4));
+		if(operand1.substring(1).equals(turn("0", operand1.length()-1))){
+			return "0"+operand2;
+		}
+		if(operand2.substring(1).equals(turn("0", operand2.length()-1))){
+			return "0"+operand1;
+		}
+		
+		floatNumber float1 =new floatNumber(operand1, eLength, sLength);
+		floatNumber float2 =new floatNumber(operand2, eLength, sLength);
+		
+		System.out.println(float1.expoent);
+		String retExpoent="";
+		String retSign="";
+		int yiwei;
+		if(firstOperandIsBigger(float1.expoent, float2.expoent)){
+			retSign=float1.sign;
+			yiwei=Integer.parseInt(integerTrueValue(float1.expoent))-Integer.parseInt(integerTrueValue(float2.expoent));
+			retExpoent=float1.expoent;
+			float2.rightShift(yiwei, float1.expoent);
+			float1.significand=float1.significand+turn("0", yiwei);
+		}else{
+			yiwei=Integer.parseInt(integerTrueValue(float2.expoent))-Integer.parseInt(integerTrueValue(float1.expoent));
+			if(!float2.expoent.equals(float1.expoent)){
+				retSign=float2.sign;
+			}
+			retExpoent=float2.expoent;
+			float1.rightShift(yiwei, float2.expoent);
+			float2.significand=float2.significand+turn("0", yiwei);
+		}
+		System.out.println("yiwei:"+yiwei);
 		
 		
 		
-		return null;
+		//尾数加减
+		int signedAddLength = 4;
+		while(signedAddLength<float1.significand.length()+1){
+			signedAddLength+=4;
+		}
+		int addLength=signedAddLength-float1.significand.length();
+		System.out.println();
+		System.out.println(float1.significand);
+		System.out.println();
+		System.out.println((float1.sign+float1.significand+" "+float2.sign+float2.significand+" "+ signedAddLength));
+		String retSignificand = signedAddition(float1.sign+float1.significand,float2.sign+float2.significand, signedAddLength);
+		//尾数规格化
+		
+		System.out.println("guigehua  "+retSignificand);
+		if(retSign.equals("")){
+		retSign=""+retSignificand.charAt(1);
+		}
+		retSignificand=retSignificand.substring(2+addLength);
+		System.out.println(retSign);
+		
+		System.out.println("guigehua  "+retSignificand);
+		if(retSignificand.charAt(0)=='1'){
+			retExpoent=oneAdder(retExpoent);
+			if(retExpoent.charAt(0)=='1'||retExpoent.substring(1).equals(turn("1", retExpoent.length()-1))){
+				//shang yi
+				
+			}
+			retExpoent=retExpoent.substring(1);
+			
+			return "0"+retSign+retExpoent+retSignificand.substring(1, sLength+1);
+			
+			
+			
+		}else{
+			if(retSignificand.charAt(1)=='1'){
+				return "0"+retSign+retExpoent+retSignificand.substring(2,sLength+2);
+			}else{
+				//gui ge hua
+				System.out.println("here");
+				System.out.println(retSignificand);
+				retSignificand=retSignificand.substring(1);
+				int iLength=retSignificand.length();
+				int jiemayidong=0;
+				for(int i=0;i<iLength;i++){
+					
+					if(retSignificand.charAt(0)=='1'){
+						break;
+					}
+					//jiema jian yi
+					jiemayidong++;
+					//zuo yi
+					retSignificand=retSignificand.substring(1);
+				}
+				System.out.println(retSignificand);
+				int ExpoentLength = 4;
+				while(ExpoentLength<retExpoent.length()+1){
+					ExpoentLength+=4;
+				}
+				if(retSignificand.length()==0){
+					return "0"+retSign+turn("0", sLength+eLength);
+				}
+				String s=(signedAddition(retExpoent, "1"+integerRepresentation(""+jiemayidong, ExpoentLength-1), ExpoentLength));
+				System.out.println("s:"+s);
+				System.out.println("i'm "+retSignificand);
+				retExpoent=s.substring(s.length()-retExpoent.length(), s.length());
+				System.out.println(retSignificand);
+				System.out.println(retSignificand);
+				return "0"+retSign+retExpoent+(retSignificand+turn("0", sLength+1)).substring(1, sLength+1);	
+				
+				
+				
+				
+			}
+			
+		}
+		
+		
+		//溢出判断并到的最终答案
+		
+		
 	}
 	
 	/**
@@ -1116,7 +1228,22 @@ public class ALU {
 	 */
 	public String floatSubtraction (String operand1, String operand2, int eLength, int sLength, int gLength) {
 		// TODO YOUR CODE HERE.
-		return null;
+
+		//
+		
+		
+		
+		if(operand2.charAt(0)=='0'){
+			operand2="1"+operand2.substring(1);
+		}else{
+			operand2="0"+operand2.substring(1);
+		}
+		if(operand2.substring(1).equals(turn("0", operand2.length()-1))){
+			return "0"+operand1;
+		}
+			
+		
+		return floatAddition(operand1, operand2, eLength, sLength, gLength);
 	}
 	
 	/**
@@ -1130,6 +1257,19 @@ public class ALU {
 	 */
 	public String floatMultiplication (String operand1, String operand2, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
+		if(operand1.substring(1).equals(turn("0", operand1.length()-1))){
+			return "0"+operand1;
+		}
+		System.out.println(operand2.substring(1)+" "+turn("0", operand2.length()-1));
+		if(operand2.substring(1).equals(turn("0", operand2.length()-1))){
+			return "0"+operand2;
+		}
+		
+		floatNumber number1 =new floatNumber(operand1, eLength, sLength);
+		floatNumber number2 =new floatNumber(operand2, eLength, sLength);
+		
+		
+		
 		return null;
 	}
 	
@@ -1144,6 +1284,36 @@ public class ALU {
 	 */
 	public String floatDivision (String operand1, String operand2, int eLength, int sLength) {
 		// TODO YOUR CODE HERE.
+		
+		
+		
+		
+		
 		return null;
+	}
+	private class floatNumber{
+		
+		String sign;
+		
+		String expoent;
+//		int expoentvalue;
+
+		String significand;
+		
+		public void rightShift(int value,String expoent){
+			this.expoent=expoent;
+			significand=turn("0", value)+significand;
+		}
+		floatNumber(String operand, int eLength, int sLength){
+			sign=""+operand.charAt(0);
+			expoent=operand.substring(1,eLength+1);
+			if(expoent!=turn("0", eLength)){
+				significand="01"+operand.substring(eLength+1);
+			}else{
+				significand="00"+operand.substring(eLength+1);
+			}
+			
+			
+		}
 	}
 }
