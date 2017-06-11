@@ -11,7 +11,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class FloatDivisionTest {
+public class IntegerDivisionTest {
 
 
 	@Rule
@@ -20,32 +20,31 @@ public class FloatDivisionTest {
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-        		{"001100000", "000000000", 4, 4, "0011110000"},
-        		{"100000000", "001100000", 4, 4, "0000000000"},
-        		{"001100000", "001110000", 4, 4, "0001100000"},
-        		{"001110000", "001100000", 4, 4, "0010000000"},
-        		{"00111110111000000", "00111111000000000", 8, 8, "000111111011000000"},
+        		{"00000000", "0000", 8, "NaN"},
+        		{"0100", "0011", 12, "0000000000001000000000001"},
+        		{"0111", "0011", 4, "000100001"},
+        		{"0111", "1101", 4, "011100001"},
+        		{"0110", "1101", 4, "011100000"},
+        		{"1010", "0011", 4, "011100000"},
         });
     }
 
     private ALU alu = new ALU();
     private String operand1;
     private String operand2;
-    private int eLength;
-    private int sLength;
+    private int length;
     private String expected;
 
-    public FloatDivisionTest(String operand1, String operand2, int eLength, int sLength, String expected) {
+    public IntegerDivisionTest(String operand1, String operand2, int length, String expected) {
     	this.operand1 = operand1;
     	this.operand2 = operand2;
-    	this.eLength = eLength;
-    	this.sLength = sLength;
+    	this.length = length;
     	this.expected = expected;
     }
 
 	@Test
 	public void test() {
-		assertEquals(expected, alu.floatDivision(operand1, operand2, eLength, sLength));
+		assertEquals(expected, alu.integerDivision(operand1, operand2, length));
 	}
 
 }
