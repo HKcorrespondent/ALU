@@ -14,17 +14,19 @@ public class ALUTest17_final {
 	}
 	@Test
 	public void signedAddition() {
-		assertEquals("0100000111",alu.signedAddition("1100", "1011", 8));
-		assertEquals("010000",alu.signedAddition("0100", "1100", 4));
+		assertEquals("0100000000",alu.signedAddition("10000", "00000", 8));
+		assertEquals("0000000000",alu.signedAddition("00100", "10100", 8));
 	}
 	@Test
 	public void floatAddition() {
 		System.out.println("001111010"+"   "+ "001110100");
-		assertEquals("0010000111",alu.floatAddition("001111010", "001110100", 4, 4, 4));
+		assertEquals("0010000000",alu.floatAddition("010000000", "000010000", 4, 4, 4));
 	}
 	@Test
 	public void floatSubtraction() {
 		assertEquals("000111110010000000",alu.floatSubtraction("00111111010100000", "00111111001000000", 8, 8, 4));
 	}
-	
+	public void floatmu() {
+//		System.out.println(alu.floatMultiplication("001110000", operand2, eLength, sLength));
+	}
 }

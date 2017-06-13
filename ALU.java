@@ -21,7 +21,7 @@ public class ALU {
 	public static void main(String[] s){
 		
 		ALU alu =new ALU();
-		System.out.println(""+(char)(~'0'));
+//		System.out.println(""+(char)(~'0'));
 		
 		
 //			
@@ -928,11 +928,11 @@ public class ALU {
 		
 		String Q=reg.substring(length);
 		
-		if(operand2.equals(fullBit("0", operand2.length()))){
-			System.out.println("zhe li 1");
+		if(operand2.charAt(0)=='1'&&operand1.substring(1).equals(fullBit("0", operand1.length()-1))){
+			
 			syb="1";
 		}
-		if(operand1.equals(fullBit("0", operand2.length()))){
+		if(operand2.equals(fullBit("0", operand2.length()))){
 			return "NaN";
 			
 		}
@@ -948,7 +948,7 @@ public class ALU {
 		
 		String Qone=SwitchDivQ(R, operand2);
 		if((operand1.charAt(0)==operand2.charAt(0)&&Qone.equals("1"))||(operand1.charAt(0)!=operand2.charAt(0)&&Qone.equals("0"))){
-			System.out.println("zhe li 2    "+Qone);
+//			System.out.println("zhe li 2    "+Qone);
 			syb="1";
 		}
 		
@@ -974,8 +974,8 @@ public class ALU {
 			}
 		}
 		
-		System.out.println(Q); 
-		System.out.println(R);
+//		System.out.println(Q); 
+//		System.out.println(R);
 		if(R.equals(operand2)){
 			Q=oneAdder(Q).substring(1);
 			R=turn("0", R.length());
@@ -1038,13 +1038,21 @@ public class ALU {
 				
 		
 		}else{
+//			operand1=operand1.substring(1);
+//			operand2=operand2.substring(1);
+//			System.out.println(length);
+//			System.out.println(operand1+" "+negation(operand2));
 			String ret = adder("0"+operand1,"0"+negation(operand2) , '1', length+4);
+//			System.out.println("!!"+ret);
+			ret=ret.substring(ret.length()-length-1,ret.length());
+//			System.out.println("!!"+ret);
 			
-			ret=ret.substring(4);
-	
 			if(ret.charAt(0)=='1'){
+//				System.out.println("lol+"+ret.substring(1));
 				retStirng= "0"+ signOfOperand1+ret.substring(1);
+//				System.out.println("ret"+" "+retStirng);
 			}else{
+				
 				retStirng="0"+negation(""+signOfOperand1)+oneAdder(negation(ret.substring(1))).substring(1);
 			}
 			
@@ -1065,8 +1073,8 @@ public class ALU {
 		
 		
 		
-		
-		
+//		System.out.println();
+//		System.out.println("ret"+" "+retStirng);
 		return retStirng;
 	}
 	/*
@@ -1121,18 +1129,20 @@ public class ALU {
 		floatNumber float1 =new floatNumber(operand1, eLength, sLength);
 		floatNumber float2 =new floatNumber(operand2, eLength, sLength);
 		
-		System.out.println(float1.expoent);
+//		System.out.println(float1.expoent);
 		String retExpoent="";
 		String retSign="";
 		int yiwei;
 		if(firstOperandIsBigger(float1.expoent, float2.expoent)){
 			retSign=float1.sign;
-			yiwei=Integer.parseInt(integerTrueValue(float1.expoent))-Integer.parseInt(integerTrueValue(float2.expoent));
+			
+			yiwei=Integer.parseInt(integerTrueValue("0"+float1.expoent))-Integer.parseInt(integerTrueValue("0"+float2.expoent));
 			retExpoent=float1.expoent;
 			float2.rightShift(yiwei, float1.expoent);
 			float1.significand=float1.significand+turn("0", yiwei);
 		}else{
-			yiwei=Integer.parseInt(integerTrueValue(float2.expoent))-Integer.parseInt(integerTrueValue(float1.expoent));
+			
+			yiwei=Integer.parseInt(integerTrueValue("0"+float2.expoent))-Integer.parseInt(integerTrueValue("0"+float1.expoent));
 			if(!float2.expoent.equals(float1.expoent)){
 				retSign=float2.sign;
 			}
@@ -1140,7 +1150,7 @@ public class ALU {
 			float1.rightShift(yiwei, float2.expoent);
 			float2.significand=float2.significand+turn("0", yiwei);
 		}
-		System.out.println("yiwei:"+yiwei);
+//		System.out.println("yiwei:"+yiwei);
 		
 		
 		
@@ -1150,21 +1160,21 @@ public class ALU {
 			signedAddLength+=4;
 		}
 		int addLength=signedAddLength-float1.significand.length();
-		System.out.println();
-		System.out.println(float1.significand);
-		System.out.println();
-		System.out.println((float1.sign+float1.significand+" "+float2.sign+float2.significand+" "+ signedAddLength));
+//		System.out.println();
+//		System.out.println(float1.significand);
+//		System.out.println();
+//		System.out.println((float1.sign+float1.significand+" "+float2.sign+float2.significand+" "+ signedAddLength));
 		String retSignificand = signedAddition(float1.sign+float1.significand,float2.sign+float2.significand, signedAddLength);
 		//尾数规格化
 		
-		System.out.println("guigehua  "+retSignificand);
+//		System.out.println("guigehua  "+retSignificand);
 		if(retSign.equals("")){
 		retSign=""+retSignificand.charAt(1);
 		}
 		retSignificand=retSignificand.substring(2+addLength);
-		System.out.println(retSign);
+//		System.out.println(retSign);
 		
-		System.out.println("guigehua  "+retSignificand);
+//		System.out.println("guigehua  "+retSignificand);
 		if(retSignificand.charAt(0)=='1'){
 			retExpoent=oneAdder(retExpoent);
 			if(retExpoent.charAt(0)=='1'||retExpoent.substring(1).equals(turn("1", retExpoent.length()-1))){
@@ -1182,8 +1192,8 @@ public class ALU {
 				return "0"+retSign+retExpoent+retSignificand.substring(2,sLength+2);
 			}else{
 				//gui ge hua
-				System.out.println("here");
-				System.out.println(retSignificand);
+//				System.out.println("here");
+//				System.out.println(retSignificand);
 				retSignificand=retSignificand.substring(1);
 				int iLength=retSignificand.length();
 				int jiemayidong=0;
@@ -1197,7 +1207,7 @@ public class ALU {
 					//zuo yi
 					retSignificand=retSignificand.substring(1);
 				}
-				System.out.println(retSignificand);
+//				System.out.println(retSignificand);
 				int ExpoentLength = 4;
 				while(ExpoentLength<retExpoent.length()+1){
 					ExpoentLength+=4;
@@ -1206,11 +1216,11 @@ public class ALU {
 					return "0"+retSign+turn("0", sLength+eLength);
 				}
 				String s=(signedAddition(retExpoent, "1"+integerRepresentation(""+jiemayidong, ExpoentLength-1), ExpoentLength));
-				System.out.println("s:"+s);
-				System.out.println("i'm "+retSignificand);
+//				System.out.println("s:"+s);
+//				System.out.println("i'm "+retSignificand);
 				retExpoent=s.substring(s.length()-retExpoent.length(), s.length());
-				System.out.println(retSignificand);
-				System.out.println(retSignificand);
+//				System.out.println(retSignificand);
+//				System.out.println(retSignificand);
 				return "0"+retSign+retExpoent+(retSignificand+turn("0", sLength+1)).substring(1, sLength+1);	
 				
 				
@@ -1296,13 +1306,15 @@ public class ALU {
 			expoent++;
 			retSignificand=retSignificand.substring(1,1+eLength);
 		}
-		System.out.println("retSignificand: "+retSignificand);
+//		System.out.println("retSignificand: "+retSignificand);
 		//yi chu
 		if(expoent>=(int)(Math.pow(2, eLength))){
 			return "1"+sign+turn("1", eLength)+turn("0", sLength);
 			
 		}
-		if(expoent<Math.pow(2, 1-(int)Math.pow(2, eLength-1))){
+//		System.out.println("expoen:" +expoent);
+//		System.out.println(1-(int)Math.pow(2, eLength-1));
+		if(expoent<1){
 			return "非规格化或者0";
 		}
 		
@@ -1343,7 +1355,7 @@ public class ALU {
 		String retSignificand="";
 		String retExpoent;
 		int  expoent=Integer.parseInt(integerTrueValue(number1.expoent))-Integer.parseInt(integerTrueValue(number2.expoent))+(int)(Math.pow(2, eLength-1)-1);
-		System.out.println("expoent:"+expoent);
+//		System.out.println("expoent:"+expoent);
 		int divisionLength = 4;
 		int gLength=sLength+1;
 		
@@ -1355,16 +1367,16 @@ public class ALU {
 				){
 			divisionLength+=4;
 		}
-		System.out.println(number1.significand+" "+number2.significand);
+//		System.out.println(number1.significand+" "+number2.significand);
 		retSignificand=integerDivision(number1.significand
 				+turn("0", gLength)
 				,number2.significand
 //				+turn("0", number2.significand.length()-1)
 				, divisionLength);
-		System.out.println("retSignificand: "+retSignificand);
+//		System.out.println("retSignificand: "+retSignificand);
 		retSignificand=retSignificand.substring(1,1+divisionLength);
 		retSignificand=retSignificand.substring(retSignificand.length()-(gLength+1),retSignificand.length());
-		System.out.println("retSignificand: "+retSignificand);
+//		System.out.println("retSignificand: "+retSignificand);
 		while(retSignificand.length()>0){
 			if(retSignificand.charAt(0)=='1'){
 				retSignificand=retSignificand.substring(1);
@@ -1376,10 +1388,25 @@ public class ALU {
 			
 		}
 		
+		
+		if(expoent>=(int)(Math.pow(2, eLength))){
+			return "1"+sign+turn("1", eLength)+turn("0", sLength);
+			
+		}
+//		System.out.println("expoen:" +expoent);
+//		System.out.println(1-(int)Math.pow(2, eLength-1));
+		
+		
 		retExpoent=integerRepresentation(""+expoent, eLength+1);
 		retExpoent=retExpoent.substring(retExpoent.length()-eLength,retExpoent.length());
 		
-		
+		if(expoent<1){
+			if(retSignificand.equals(turn("0", retSignificand.length()))){
+				return "0"+sign+turn("0", eLength)+turn("0", sLength);
+			}else{
+			return "非规格化";
+			}
+		}
 		return overflow+sign+retExpoent+(retSignificand+turn("0", sLength)).substring(0, sLength);
 	}
 	private class floatNumber{
